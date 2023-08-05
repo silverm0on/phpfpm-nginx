@@ -171,6 +171,7 @@ RUN apk add --update --no-cache \
 	imagemagick-libs \
 	imagemagick-dev \
     rabbitmq-c-dev \
+    gcompat \
     && cd /tmp \
     && git clone https://github.com/renatomefi/php-fpm-healthcheck.git \
     && cd php-fpm-healthcheck \
@@ -218,6 +219,7 @@ RUN \
     docker-php-ext-install -j$(nproc) swoole && \
     rm -f swoole.tar.gz $HOME/.composer/*-old.phar && \
     docker-php-source delete
+RUN npm install --save-dev chokidar
 
 # Clear npm proxy
 RUN npm config rm proxy

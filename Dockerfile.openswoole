@@ -171,6 +171,7 @@ RUN apk add --update --no-cache \
 	imagemagick-libs \
 	imagemagick-dev \
     rabbitmq-c-dev \
+    gcompat \
     && cd /tmp \
     && git clone https://github.com/renatomefi/php-fpm-healthcheck.git \
     && cd php-fpm-healthcheck \
@@ -218,6 +219,7 @@ RUN \
     docker-php-ext-install -j$(nproc) --ini-name zzz-docker-php-ext-openswoole.ini openswoole && \
     rm -f swoole.tar.gz $HOME/.composer/*-old.phar && \
     docker-php-source delete 
+RUN npm install --save-dev chokidar
 
 # Clear npm proxy
 RUN npm config rm proxy
@@ -235,7 +237,7 @@ USER www-data
 
 COPY configs/supervisord-openswoole.conf /etc/supervisord.conf
 COPY configs/nginx.conf /etc/nginx/nginx.conf
-COPY configs/nginx-default.conf /etc/nginx/conf.d/default.conf
+COPY configs/nginx-default-octane.conf /etc/nginx/conf.d/default.conf
 COPY configs/index.php /var/www/html/public/index.php
 COPY configs/docker-vars.ini /usr/local/etc/php/conf.d/docker-vars.ini
 
@@ -245,4 +247,4 @@ USER root
 EXPOSE 80 9000
 
 CMD ["/docker-entrypoint.sh"]
-#HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD healthcheck
+HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=8 CMD php artisan octane:status || exit 1
